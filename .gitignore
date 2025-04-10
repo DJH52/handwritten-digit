@@ -1,2 +1,3 @@
 # Python specific
-.venv
+venv/
+.venv/
