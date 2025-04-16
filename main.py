@@ -3,6 +3,8 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 import matplotlib.pyplot as plt
 
+from preprocess import Preprocess
+
 # Functions 
 def display_images(train_images, train_labels, number_of_images=25):
     """[A concise one-line summary of the function's purpose.]
@@ -49,18 +51,42 @@ def display_images(train_images, train_labels, number_of_images=25):
 def main():
     # hyperparameters = dict([('sape', 4139)])
 
-    # Load dataset
-    mnist = tf.keras.datasets.mnist
+    # # Load dataset
+    mnist = tf.keras.datasets.mnist    
 
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-    x_train, x_test = x_train / 255.0, x_test / 255.0
+    # # Split the dataset into training and test sets
+    # (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    
+    # # Normalise the images 
+    # x_train, x_test, y_train, y_test = x_train / 255.0, x_test / 255.0, y_train / 255.0, y_test / 255.0
 
+    preprocessed_data = Preprocess(mnist)
+    x_train, x_test, y_train, y_test = preprocessed_data.split_data()
+    x_train, x_test, y_train, y_test = preprocessed_data.normalise_images()
+    
     # Inital dataset investigation
-    display_images(x_train, y_train)
+    # display_images(x_train, y_train)
+
+    # Setup model layers
+    model = tf.keras.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(10)
+    ])
+
+    # Compile model with optimiser, loss function and metrics 
+    model.compile(optimizer='adam',
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
     
-    
+    # Train model
+    model.fit(x_train, y_train, epochs=5)
+
+    # Evaluate model on test data using metrics
+    test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
+    print('\nTest accuracy:', test_acc)
     
     pass
 
 if __name__ == "__main__":
-    pass
+    main()
