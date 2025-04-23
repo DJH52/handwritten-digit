@@ -1,4 +1,5 @@
 # Imports
+import pickle
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
@@ -119,9 +120,21 @@ def main():
     print(f'Predicted class for the first test image:{predicted_class}')
     print(f'Actual Class:{y_test[test_image_position]}')
 
-    custom_image_path = "7.png"  # Replace with your image path
-    test_custom_image(probability_model, custom_image_path)
+    custom_image_path = "7.png"
+    # test_custom_image(probability_model, custom_image_path)
 
+    # # Pickle the model 
+    # with open("model.pkl", "wb") as model_file:
+    #     pickle.dump(probability_model, model_file)
+    # print("model has been saved")
+    
+    # Load the model  
+    with open("model.pkl", "rb") as model_file:
+        loaded_model = pickle.load(model_file)
+        print("Model has been loaded.")
+
+    test_custom_image(loaded_model, custom_image_path)
+    
     pass
 
 if __name__ == "__main__":
